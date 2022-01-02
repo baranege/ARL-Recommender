@@ -1,4 +1,4 @@
-# Task1 Data Processing
+# Task1 Data Preprocessing
 
 import pandas as pd
 pd.set_option("display.max.columns", None)
@@ -23,12 +23,16 @@ df_deu = df[df["Country"]=="Germany"]
 check_df()
 
 ## creating invoices
+
 ### amount of goods bought in a transaction
 df_deu.groupby(['Invoice', 'Description']).agg({"Quantity": "sum"}).head(20)
+
 ### reshaping table: goods as variables, bundles(invoices) in columns, pivoting with unstack()
 df_deu.groupby(['Invoice', 'Description']).agg({"Quantity": "sum"}).unstack().iloc[0:5, 0:5]
+
 ### filling NAs with 0 because the good does not exist in that bundle
 df_deu.groupby(['Invoice', 'Description']).agg({"Quantity": "sum"}).unstack().fillna(0).iloc[0:5, 0:5]
+
 ### filling the amount of existing goods with 1
 df_deu.groupby(['Invoice', 'Description']).agg({"Quantity": "sum"}).\
     unstack().fillna(0).\
@@ -54,16 +58,20 @@ def check_id(dataframe, stock_code):
 
 
 # Task 2 Association Rules Based on German Customers
+
 ### grouping frequently boguht items
 frequent_itemsets = apriori(deu_inv_pro_df, min_support=0.01, use_colnames=True)
+
 ### sorting frequently bought items
 frequent_itemsets.sort_values("support", ascending=False).head(20)
+
 ### finding association rules => association_rules()
 rules = association_rules(frequent_itemsets, metric="support", min_threshold=0.01)
 rules.sort_values("support", ascending=False).head(20)
 rules.sort_values("lift", ascending=False).head(20) # good if lift is greater than 1
 
 # Task 3 Accessing the Good through IDs
+
 ## name of the good by ID
 check_id(df_deu, 21987)
 check_id(df_deu, 23235)
@@ -96,7 +104,7 @@ check_id(df_deu, 22746)
 
 ######################
 
-ef retail_data_prep(dataframe):
+def retail_data_prep(dataframe):
     dataframe.drop(dataframe[dataframe["StockCode"] == "POST"].index, inplace=True) #### Guncelle!!!
     dataframe.dropna(inplace=True)
     dataframe = dataframe[~dataframe["Invoice"].str.contains("C", na=False)]
